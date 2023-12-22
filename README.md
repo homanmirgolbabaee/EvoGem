@@ -1,6 +1,5 @@
 
-<title>EvoGem Project</title>
-
+EvoGem Project
 <body>
     <h1>EvoGem Project 🤖🌐</h1>
     <p>EvoGem harnesses the power of Google's Gemini Pro Vision in a compact and innovative IoT package. It combines the capabilities of NodeMCU ESP8266 with an OLED interface to create a versatile and intelligent robotics platform.</p>
