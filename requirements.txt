@@ -7,3 +7,5 @@ vertexai
 streamlit
 Pillow  
 pyserial 
+tempfile
+json
