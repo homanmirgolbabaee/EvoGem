@@ -3,3 +3,4 @@ vertexai
 streamlit
 Pillow  
 pyserial 
+opencv-python
