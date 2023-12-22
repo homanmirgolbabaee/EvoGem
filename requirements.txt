@@ -1,7 +1,4 @@
 vertexai
-os
 streamlit
-base64
-PIL
-io
-serial
+Pillow  
+pyserial 
