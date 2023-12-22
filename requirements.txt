@@ -1,4 +1,4 @@
-vertexai
+vertexai==1.2.3
 streamlit
 Pillow  
 pyserial 
