@@ -7,4 +7,4 @@ vertexai
 streamlit
 Pillow  
 pyserial 
-json
+
