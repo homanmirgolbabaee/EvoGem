@@ -1,10 +1,10 @@
 import vertexai
 from vertexai.preview.generative_models import GenerativeModel, Part
-import os
+
 import streamlit as st 
 import base64
 from PIL import Image
-import io
+
 import cv2
 
 import serial
