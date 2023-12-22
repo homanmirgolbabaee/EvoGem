@@ -5,10 +5,9 @@ import streamlit as st
 import base64
 from PIL import Image
 import io
-import cam
-from cam import record_video_and_screenshots
+import cv2
+
 import serial
-from cam import generate
 import tempfile
 from google.oauth2.service_account import Credentials
 import json
@@ -30,14 +29,67 @@ def authenticate_with_service_account(credentials_info):
     # Set the credentials environment variable
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials
 
+def record_video_and_screenshots():
+
+    # Define the duration of the video and interval for screenshots
+    record_duration = 5  # seconds
+    screenshot_interval = 1  # seconds
+
+    # Create a directory for screenshots if it doesn't exist
+    screenshots_dir = 'screenshots'
+    os.makedirs(screenshots_dir, exist_ok=True)
+
+    # Initialize the video capture object (1 for the external webcam, change if necessary)
+    cap = cv2.VideoCapture(0)
+
+    # Check if camera opened successfully
+    if not cap.isOpened():
+        print("Error: Could not open camera.")
+        exit()
+
+    # Define the codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter('video/output.mp4', fourcc, 20.0, (640, 480))
+
+    start_time = time.time()
+    next_screenshot_time = start_time + screenshot_interval
+    screenshot_count = 0
+
+    while True:
+        current_time = time.time()
+        ret, frame = cap.read()
+        if ret:
+            # Write the frame into the file 'output.avi'
+            out.write(frame)
+
+            # Capture screenshot at defined intervals
+            if current_time >= next_screenshot_time and screenshot_count < 5:
+                screenshot_filename = os.path.join(screenshots_dir, f'screenshot_{screenshot_count + 1}.png')
+                cv2.imwrite(screenshot_filename, frame)
+                screenshot_count += 1
+                next_screenshot_time += screenshot_interval
+
+            # Show the frame (optional, you can remove this if you don't need a preview)
+            cv2.imshow('frame', frame)
+
+            # Break the loop after 'record_duration' seconds
+            if current_time - start_time > record_duration:
+                break
+        else:
+            break
+
+    # Release everything when done
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
 
 
 def record_and_upload():
     # Call the function to record video and capture screenshots
-    cam.record_video_and_screenshots()  # This function should encapsulate the logic from cam.py
-
+    #record_video_and_screenshots()  # This function should encapsulate the logic from cam.py
+    pass
     # Upload the captured content to GCS
-    cam.upload_to_gcs('lablabhack', 'screenshots')  # Update with your bucket name
+    #upload_to_gcs('lablabhack', 'screenshots')  # Update with your bucket name
 
 
 
@@ -190,7 +242,7 @@ def process_and_generate(image):
     image_base64 = base64.b64encode(buffered.getvalue()).decode()
 
     # Call the generate function from cam module
-    return cam.generate(image_base64)
+    return generate(image_base64)
 
 # Streamlit page configuration and initialization
 st.set_page_config(page_title="Chatbot", page_icon="🤖")
