@@ -1,6 +1,6 @@
+opencv-python
 google-cloud-aiplatform
 vertexai
 streamlit
 Pillow  
 pyserial 
-opencv-python
