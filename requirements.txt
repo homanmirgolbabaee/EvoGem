@@ -1,5 +1,6 @@
 opencv-python
 opencv-python-headless
+matplotlibnumpy
 google-cloud-aiplatform
 vertexai
 streamlit
