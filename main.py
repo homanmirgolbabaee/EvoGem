@@ -9,18 +9,26 @@ import cam
 from cam import record_video_and_screenshots
 import serial
 from cam import generate
+import tempfile
+from google.oauth2.service_account import Credentials
+import json
 
 
 
 
-
-
-
+# Function to create a temporary credentials file
+def create_temp_credentials_file(credentials_info):
+    with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.json') as temp_file:
+        json.dump(credentials_info, temp_file)
+        return temp_file.name
 
 
 # Function to set up authentication
-def authenticate_with_service_account(json_credentials_path):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = json_credentials_path
+def authenticate_with_service_account(credentials_info):
+    # Use in-memory credentials
+    credentials = Credentials.from_service_account_info(credentials_info)
+    # Set the credentials environment variable
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials
 
 
 
@@ -44,7 +52,23 @@ def image_to_base64(image):
 
 # Function to call Gemini Pro Vision API
 def generate(image_base64,user_input):
-    authenticate_with_service_account("json/gemini-lablab-28e6c232bf0d.json")
+        # Use Streamlit secrets to get the credentials
+    creds_info  = {
+        "type": st.secrets["type"],
+        "project_id": st.secrets["project_id"],
+        "private_key_id": st.secrets["private_key_id"],
+        "private_key": st.secrets["private_key"],
+        "client_email": st.secrets["client_email"],
+        "client_id": st.secrets["client_id"],
+        "auth_uri": st.secrets["auth_uri"],
+        "token_uri": st.secrets["token_uri"],
+        "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
+        "client_x509_cert_url": st.secrets["client_x509_cert_url"]
+    }
+    # Create a temp file with credentials and set the environment variable
+    temp_credentials_path = create_temp_credentials_file(creds_info)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
+
     model = GenerativeModel("gemini-pro-vision")
     image_part = Part.from_data(data=base64.b64decode(image_base64), mime_type="image/png")
     
@@ -79,8 +103,24 @@ def generate(image_base64,user_input):
     
 # Function to call Gemini Pro
 def multiturn_generate_content(prompt):
-    authenticate_with_service_account("json/gemini-lablab-28e6c232bf0d.json")
-
+    #authenticate_with_service_account("json/gemini-lablab-28e6c232bf0d.json")
+        # Use Streamlit secrets to get the credentials
+    creds_info  = {
+        "type": st.secrets["type"],
+        "project_id": st.secrets["project_id"],
+        "private_key_id": st.secrets["private_key_id"],
+        "private_key": st.secrets["private_key"],
+        "client_email": st.secrets["client_email"],
+        "client_id": st.secrets["client_id"],
+        "auth_uri": st.secrets["auth_uri"],
+        "token_uri": st.secrets["token_uri"],
+        "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
+        "client_x509_cert_url": st.secrets["client_x509_cert_url"]
+    }
+    # Create a temp file with credentials and set the environment variable
+    temp_credentials_path = create_temp_credentials_file(creds_info)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
+    
     config = {
         "max_output_tokens": 2048,
         "temperature": 0.9,
@@ -104,7 +144,7 @@ def initializing_nodeMCU(string):
     data_to_send = (str(string) + "!\n").encode()  # Encoding the string to bytes
     ser.write(data_to_send)
 
-    time.sleep(5.5)  # Short delay to ensure the data is fully sent
+    time.sleep(10)  # Short delay to ensure the data is fully sent
     ser.close()  # Close the serial port
 
     
@@ -164,6 +204,7 @@ def main():
         st.title("Welcome to the Home Page")
         st.write("Interfacing Gemini Pro & Gemini Pro-Vision with IoT (NodeMCU)")
         st.write("github.com/homanmirgolbabaee")
+        st.write("Bridging Vision to Innovation, One Byte at a Time")
         st.write("**COOL FEATURES COMMING SOON !**")
         st.subheader("Options")
         st.write("-**Chatbot** : Chat with Gemini Pro on a NodeMCU & 0.96 OLED Display ")
